@@ -63,9 +63,7 @@ def add_user(username, password, email, role):
             return "username_error"
 
         # Insert new player
-        cursor.execute("INSERT INTO users (username, password_hash, email, role) VALUES (%s, %s, %s, %s)",
-                       (username, password, email, role))
-        
+        cursor.callproc('add_player_if_role_isplayer', (username, password, email, role))
         conn.commit()
         return True
 
@@ -76,3 +74,24 @@ def add_user(username, password, email, role):
     finally:
         cursor.close()
         conn.close()
+
+
+def get_user_role(username, password):
+    try:
+        conn= connect_db()
+        cursor = conn.cursor()
+
+        query = "SELECT role FROM users WHERE username = %s AND password_hash = %s"
+        cursor.execute(query, (username, password))
+        result = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
+        if result:
+            return result[0]  # Return the role (e.g., 'admin' or 'player')
+        else:
+            return None  # No matching user found
+    except mysql.connector.Error as err:
+        print(f"Database error: {err}")
+        return None

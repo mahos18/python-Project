@@ -26,7 +26,8 @@ window = Tk()
 
 window.geometry("516x497")
 window.configure(bg = "#FFFFFF")
-custom_font = font.Font(family="Arial", size=20)
+custom_font = font.Font(family="Iceland", size=20)
+custom_font20 = font.Font(family="Iceland", size=25)
 role_var = StringVar()
 role_var.set("Select Role")
 def main():
@@ -52,7 +53,8 @@ def register():
         return
 
     if add_user(username, password,email,role):
-        messagebox.showinfo("Success", "Login Successful!")
+        messagebox.showinfo("Success", "Login Successful!,please sign in again")
+        window.destroy()
     
     else:
         messagebox.showerror("Error", "Invalid Username or Password")
@@ -148,7 +150,7 @@ canvas.create_text(
     anchor="nw",
     text="USERNAME",
     fill="#000000",
-    font=("Inter", 27 * -1)
+    font=custom_font20
 )
 
 canvas.create_text(
@@ -157,7 +159,7 @@ canvas.create_text(
     anchor="nw",
     text="PASSWORD",
     fill="#000000",
-    font=("Inter", 26 * -1)
+    font=custom_font20
 )
 
 canvas.create_text(
@@ -166,7 +168,7 @@ canvas.create_text(
     anchor="nw",
     text="EMAIL",
     fill="#000000",
-    font=("Inter", 27 * -1)
+    font=custom_font20
 )
 
 canvas.create_text(
@@ -175,7 +177,7 @@ canvas.create_text(
     anchor="nw",
     text="ROLE",
     fill="#000000",
-    font=("Inter", 28 * -1)
+    font=custom_font20
 )
 
 role_var = StringVar()
@@ -208,7 +210,7 @@ canvas.create_text(
     anchor="nw",
     text="ALREADY REGISTERED?",
     fill="#FD0707",
-    font=("Inter", 18 * -1)
+    font=custom_font
 )
 
 button_image_2 = PhotoImage(

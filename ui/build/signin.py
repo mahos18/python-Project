@@ -4,7 +4,7 @@
 
 
 from pathlib import Path
-from dbconnection import check_login
+from dbconnection import check_login,get_user_role
 from redirect import open_main
 
 # from tkinter import *
@@ -25,8 +25,8 @@ window = Tk()
 
 window.geometry("1368x720")
 window.configure(bg = "#FFFFFF")
-custom_font = font.Font(family="Arial", size=16)
-
+custom_font = font.Font(family="Iceland", size=30)
+custom_font20 = font.Font(family="Iceland", size=40)
 
 
 def login():
@@ -40,6 +40,13 @@ def login():
 
     if check_login(username, password):
         messagebox.showinfo("Success", "Login Successful!")
+        role=get_user_role(username, password)
+        if role=="player":
+            messagebox.showinfo("Success", "player dash")
+         
+        elif role=="user":
+            messagebox.showinfo("Success", "user dash")
+
     
     else:
         messagebox.showerror("Error", "Invalid Username or Password")
@@ -81,7 +88,7 @@ canvas.create_text(
     anchor="nw",
     text=" LOGIN",
     fill="#000000",
-    font=("Iceland Regular", 55 * -1)
+    font=custom_font20
 )
 
 canvas.create_text(
@@ -90,7 +97,7 @@ canvas.create_text(
     anchor="nw",
     text="USERNAME",
     fill="#000000",
-    font=("Iceland Regular", 31 * -1)
+    font=custom_font20
 )
 
 canvas.create_text(
@@ -99,7 +106,7 @@ canvas.create_text(
     anchor="nw",
     text="PASSWORD",
     fill="#000000",
-    font=("Iceland Regular", 31 * -1)
+    font=custom_font20
 )
 
 entry_image_1 = PhotoImage(
@@ -182,7 +189,7 @@ canvas.create_text(
     anchor="nw",
     text="CRICKET LEAGUE \nMANAGEMENT",
     fill="#ED0A0A",
-    font=("Poppins Regular", 64 * -1)
+    font=("Iceland", 80 * -1)
 )
 
 image_image_3 = PhotoImage(

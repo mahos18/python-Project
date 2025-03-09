@@ -129,7 +129,7 @@ canvas.create_text(
     anchor="nw",
     text="ADMIN DASHBOARD",
     fill="#000000",
-    font=("Inter Bold", 71 * -1)
+    font=("Iceland", 81 * -1)
 )
 window.resizable(False, False)
 window.mainloop()

@@ -8,7 +8,7 @@ from redirect import open_adminlogin,open_signin,open_signup
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage,font
 
 
 OUTPUT_PATH = Path(__file__).parent
@@ -24,6 +24,9 @@ window = Tk()
 window.geometry("1368x720")
 window.title="Home page"
 window.configure(bg = "#FFFFFF")
+custom_font = font.Font(family="Iceland", size=30)
+custom_font20 = font.Font(family="Iceland", size=60)
+
 
 def signin():
     window.destroy()
@@ -34,8 +37,9 @@ def adminsignin():
     open_adminlogin()
 
 def signup():
-    window.destroy()
+
     open_signup()
+   
     
 
 canvas = Canvas(
@@ -63,7 +67,7 @@ canvas.create_text(
     anchor="nw",
     text="CRICKET LEAGUE MANAGEMENT SYSTEM",
     fill="#000000",
-    font=("Inter", 61 * -1)
+    font=custom_font20
 )
 
 image_image_2 = PhotoImage(
