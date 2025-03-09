@@ -4,7 +4,7 @@
 
 
 from pathlib import Path
-from redirect import open_adminlogin,open_signin
+from redirect import open_adminlogin,open_signin,open_signup
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
@@ -22,6 +22,7 @@ def relative_to_assets(path: str) -> Path:
 window = Tk()
 
 window.geometry("1368x720")
+window.title="Home page"
 window.configure(bg = "#FFFFFF")
 
 def signin():
@@ -31,6 +32,11 @@ def signin():
 def adminsignin():
     window.destroy()
     open_adminlogin()
+
+def signup():
+    window.destroy()
+    open_signup()
+    
 
 canvas = Canvas(
     window,
@@ -90,7 +96,7 @@ button_2 = Button(
     image=button_image_2,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_2 clicked"),
+    command=signup,
     relief="flat"
 )
 button_2.place(

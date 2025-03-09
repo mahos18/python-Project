@@ -12,3 +12,6 @@ def open_admindash():
 
 def open_main():
     os.system("python main.py")
+
+def open_signup():
+    os.system("python signup.py")

@@ -47,3 +47,32 @@ def check_login(username, password):
     except mysql.connector.Error as e:
         print(f"Database Query Error: {e}")
         return False
+
+
+
+def add_user(username, password, email, role):
+    try:
+        conn= connect_db()
+        cursor = conn.cursor()
+
+        # Check if the username already exists
+        cursor.execute("SELECT COUNT(*) FROM users WHERE username = %s", (username,))
+        result = cursor.fetchone()
+
+        if result[0] > 0:
+            return "username_error"
+
+        # Insert new player
+        cursor.execute("INSERT INTO users (username, password_hash, email, role) VALUES (%s, %s, %s, %s)",
+                       (username, password, email, role))
+        
+        conn.commit()
+        return True
+
+    except mysql.connector.Error as err:
+        print (f"Database Error: {err}")
+        return False
+
+    finally:
+        cursor.close()
+        conn.close()

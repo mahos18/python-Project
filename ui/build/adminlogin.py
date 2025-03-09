@@ -4,7 +4,7 @@
 
 from pathlib import Path
 from dbconnection import check_adminlogin
-from redirect import  open_admindash
+from redirect import  open_admindash,open_main
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
@@ -27,7 +27,13 @@ window = Tk()
 window.tite="Adminlogin"
 window.geometry("1368x720")
 window.configure(bg = "#FFFFFF")
+
 custom_font = font.Font(family="Arial", size=16)
+
+def main():
+    window.destroy() 
+    open_main()
+
 
 def login():
     """Handles login button click"""
@@ -185,6 +191,22 @@ image_3 = canvas.create_image(
     527.0000213410606,
     547.0000042453341,
     image=image_image_3
+)
+
+button_image_4 = PhotoImage(
+    file=relative_to_assets("button_4.png"))
+button_4 = Button(
+    image=button_image_4,
+    borderwidth=0,
+    highlightthickness=0,
+    command=main,
+    relief="flat"
+)
+button_4.place(
+    x=1033.0,
+    y=592.0,
+    width=32.0,
+    height=32.0
 )
 
 canvas.create_text(
