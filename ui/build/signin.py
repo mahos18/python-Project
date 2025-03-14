@@ -4,8 +4,9 @@
 
 
 from pathlib import Path
-from dbconnection import check_login,get_user_role
+from dbconnection import check_login,get_user_role,get_user_id
 from redirect import open_main
+import subprocess
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
@@ -19,6 +20,8 @@ ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Soham\Desktop\RAMDOM PROJECTS\cricke
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
+def open_player_dashboard(user_id):
+    subprocess.run(["python", "playerdash/playerdash.py", str(user_id)])
 
 
 window = Tk()
@@ -42,7 +45,9 @@ def login():
         messagebox.showinfo("Success", "Login Successful!")
         role=get_user_role(username, password)
         if role=="player":
-            messagebox.showinfo("Success", "player dash")
+            userid=get_user_id(username, password)
+            open_player_dashboard(userid)
+            window.destroy()
          
         elif role=="user":
             messagebox.showinfo("Success", "user dash")

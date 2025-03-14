@@ -6,11 +6,12 @@
 from pathlib import Path
 from redirect import open_main,open_signin
 from tkinter import ttk 
-from dbconnection import add_user
+from dbconnection import add_user,send_verification_email,verify_email_code
+import re
 
 # from Tkinter import *
 # Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage,font,StringVar, OptionMenu,messagebox
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage,font,StringVar, OptionMenu,messagebox,Toplevel, Label
 
 
 
@@ -32,7 +33,7 @@ role_var = StringVar()
 role_var.set("Select Role")
 def main():
     window.destroy()
-    open_main()
+    
     
 
 def signin():
@@ -60,6 +61,48 @@ def register():
         messagebox.showerror("Error", "Invalid Username or Password")
 
 
+def is_valid_email(email):
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email)
+
+
+def open_otp_window():
+    global otp_window, entry_3
+    email = entry_3.get()  # Get email from signup form
+
+    if not is_valid_email(email):
+        messagebox.showerror("Invalid Email", "Please enter a valid email address.")
+        return
+
+
+    if send_verification_email(email):
+        messagebox.showinfo("OTP Sent", "A verification code has been sent to your email.")
+    elif send_verification_email(email)=='error':
+         messagebox.showerror("Error", "Please enter correct Email Address")
+
+    else:
+        messagebox.showerror("Error", "Failed to send OTP. Try again.")
+        return
+
+    # Create a new OTP window
+    otp_window = Toplevel(window)
+    otp_window.title("Email Verification")
+    otp_window.geometry("350x200")
+
+    Label(otp_window, text="Enter OTP:", font=("Inter", 16)).pack(pady=10)
+    
+    entry_otp = Entry(otp_window, font=("Inter", 16))
+    entry_otp.pack(pady=5)
+
+    def verify_otp():
+        otp = entry_otp.get()
+        if verify_email_code(email, otp):
+            register()  # Register user after verification
+            otp_window.destroy()
+        else:
+            messagebox.showerror("Verification Failed", "Invalid OTP. Please try again.")
+
+    Button(otp_window, text="Verify OTP", command=verify_otp, font=("Inter", 14)).pack(pady=10)
 
 
 canvas = Canvas(
@@ -194,7 +237,7 @@ button_1 = Button(
     image=button_image_1,
     borderwidth=0,
     highlightthickness=0,
-    command=register,
+    command=open_otp_window,
     relief="flat"
 )
 button_1.place(

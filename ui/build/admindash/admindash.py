@@ -4,10 +4,11 @@
 
 
 from pathlib import Path
-
+import os
 # from tkinter import *
 # Explicit imports to satisfy Flake8
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+#from teammng import open_team_management
 
 
 OUTPUT_PATH = Path(__file__).parent
@@ -16,6 +17,9 @@ ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Soham\Desktop\RAMDOM PROJECTS\cricke
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
+
+def open_team_management():
+     os.system("python admindash/team.py")
 
 
 window = Tk()
@@ -73,7 +77,7 @@ button_2 = Button(
     image=button_image_2,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_2 clicked"),
+    command=lambda: print("button_1 clicked"),
     relief="flat"
 )
 button_2.place(
@@ -89,7 +93,7 @@ button_3 = Button(
     image=button_image_3,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_3 clicked"),
+    command=open_team_management,
     relief="flat"
 )
 button_3.place(
