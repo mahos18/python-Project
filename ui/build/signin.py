@@ -46,8 +46,9 @@ def login():
         role=get_user_role(username, password)
         if role=="player":
             userid=get_user_id(username, password)
-            open_player_dashboard(userid)
             window.destroy()
+            open_player_dashboard(userid)
+            
          
         elif role=="user":
             messagebox.showinfo("Success", "user dash")

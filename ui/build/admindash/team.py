@@ -3,7 +3,7 @@ from tkinter import Tk, Canvas, Button, PhotoImage, Listbox, Scrollbar, messageb
 from dbconnectionadmin import get_teams, add_team, remove_team, get_players, update_player_team,get_team_players
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Soham\Desktop\RAMDOM PROJECTS\cricket_league_management\ui\build\admindash\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Soham\Desktop\RAMDOM PROJECTS\cricket_league_management\ui\build\admindash\assets1\assetsteam\frame0")
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)

@@ -21,6 +21,13 @@ def relative_to_assets(path: str) -> Path:
 def open_team_management():
      os.system("python admindash/team.py")
 
+def openstats():
+     os.system("python admindash/stats.py")
+
+def openpm():
+     os.system("python admindash/playerm.py")
+
+
 
 window = Tk()
 window.title("Admin")
@@ -77,7 +84,7 @@ button_2 = Button(
     image=button_image_2,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_1 clicked"),
+    command=openpm,
     relief="flat"
 )
 button_2.place(
@@ -109,7 +116,7 @@ button_4 = Button(
     image=button_image_4,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_4 clicked"),
+    command=openstats,
     relief="flat"
 )
 button_4.place(

@@ -1,7 +1,8 @@
 from pathlib import Path
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Label
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Label,messagebox
 from dbconnectionplayer import get_player_details,get_standings,get_upcoming_matches,get_team_id
 import sys
+import os
 from tkinter import ttk
 
 OUTPUT_PATH = Path(__file__).parent
@@ -9,6 +10,21 @@ ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Soham\Desktop\RAMDOM PROJECTS\cricke
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
+
+
+def logout():
+    # Show confirmation dialog
+    confirm = messagebox.askyesno("Logout", "Are you sure you want to log out?")
+    
+    if confirm:
+        window.destroy()  # Destroy current window
+        # Get parent directory path
+        parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        main_script = os.path.join(parent_dir, "main.py")
+
+        # Run main.py from the parent directory
+        if os.path.exists(main_script):
+            os.system(f'python "{main_script}"')  # Run the main script
 
 def load_user_id():
     """Fetches the user_id from command-line arguments if provided."""
@@ -103,7 +119,7 @@ canvas.create_text(742.0, 48.0, anchor="nw", text="UPCOMING MATCHES", fill="#000
 canvas.create_text(742.0, 376.0, anchor="nw", text="TEAM STANDINGS", fill="#000000", font=("Iceland", 41 * -1))
 
 button_image_1 = PhotoImage(file=relative_to_assets("button_1.png"))
-button_1 = Button(image=button_image_1, borderwidth=0, highlightthickness=0, command=lambda: print("button_1 clicked"), relief="flat")
+button_1 = Button(image=button_image_1, borderwidth=0, highlightthickness=0, command=logout, relief="flat")
 button_1.place(x=539.0, y=42.0, width=72.0, height=35.0)
 
 def display_standings():
@@ -128,7 +144,7 @@ def display_standings():
     for col, ratio in zip(columns, column_ratios):
         tree.heading(col, text=col)
         tree.column(col, anchor="center", width=int(total_width * ratio))
-    tree.place(x=750, y=420, width=500, height=250)  # Adjust placement & size
+    tree.place(x=750, y=420, width=560, height=250)  # Adjust placement & size
 
     # Insert data into the table
     for team in standings:
