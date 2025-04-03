@@ -4,13 +4,11 @@
 
 
 from pathlib import Path
-
-# from tkinter import *
-# Explicit imports to satisfy Flake8
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage,font,messagebox
-from dbconnectionadmin import get_all_players,add_player
+from dbconnectionadmin import get_all_players,add_player,fetch_teams,delete_player,update_player,get_user_id
 from tkinter import ttk
 import tkinter as tk
+import os
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Soham\Desktop\RAMDOM PROJECTS\cricket_league_management\ui\build\admindash\assets1\assetsplayer\frame0")
@@ -19,7 +17,12 @@ ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Soham\Desktop\RAMDOM PROJECTS\cricke
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
+tree = None 
+def add():
+    
+    os.system("python admindash/addplayer.py")
 
+    search()
 
 def search():
     search_query = entry_1.get()
@@ -38,8 +41,8 @@ def search():
     column_ratios = [0.2,0.3,0.2,0.3]  # Adjust ratios (sum should be 1.0)
     total_width = 500  # Set total width of the table
 
+    global tree
     tree = ttk.Treeview(window, columns=columns, show="headings")
-
     # Define column headings & set width dynamically
     for col, ratio in zip(columns, column_ratios):
         tree.heading(col, text=col)
@@ -54,40 +57,10 @@ def search():
             team["role"],
             team["team_name"]        
         ))
+    return tree
 
 
 
-def add():
-    add_window = tk.Toplevel()
-    add_window.title("Add Player")
-    add_window.geometry("300x200")
-
-    tk.Label(add_window, text="Player Name:").pack(pady=5)
-    entry_name = tk.Entry(add_window)
-    entry_name.pack(pady=5)
-
-    tk.Label(add_window, text="Role:").pack(pady=5)
-    role_var = tk.StringVar()
-    role_dropdown = ttk.Combobox(add_window, textvariable=role_var, values=["Batsman", "Bowler", "WicketKeeper"], state="readonly")
-    role_dropdown.pack(pady=5)
-    role_dropdown.current(0)  # Set default selection
-
-    def submit():
-        player_name = entry_name.get().strip()
-        role = role_var.get().strip()
-
-        if not player_name or not role:
-            messagebox.showwarning("Input Error", "All fields are required.")
-            return
-
-        if add_player(player_name, role):  # Call database function
-            messagebox.showinfo("Success", "Player added successfully!")
-            add_window.destroy()
-        else:
-            messagebox.showerror("Error", "Failed to add player.")
-
-    tk.Button(add_window, text="Add Player", command=submit).pack(pady=10)
-    add_window.mainloop()
     
     
 
@@ -97,12 +70,114 @@ def add():
 
 
 def edit():
-    pass
+    global tree  # Use the global tree variable
+
+    selected_item = tree.selection()
+    if not selected_item:
+        messagebox.showwarning("No Selection", "Please select a player to edit.")
+        return
+
+    # Get selected player's data
+    player_data = tree.item(selected_item, "values")
+    player_id, player_name, role, team_name = player_data  # Extract values
+
+    # Edit Window
+    edit_window = tk.Toplevel()
+    edit_window.title("Edit Player")
+    edit_window.geometry("300x250")
+
+    tk.Label(edit_window, text="Player Name:").pack(pady=5)
+    entry_name = tk.Entry(edit_window)
+    entry_name.pack(pady=5)
+    entry_name.insert(0, player_name)  # Pre-fill with existing name
+
+    tk.Label(edit_window, text="Role:").pack(pady=5)
+    role_var = tk.StringVar()
+    role_dropdown = ttk.Combobox(edit_window, textvariable=role_var, values=["Batsman", "Bowler", "WicketKeeper"], state="readonly")
+    role_dropdown.pack(pady=5)
+    role_dropdown.set(role)  # Set current role
+
+    tk.Label(edit_window, text="Team:").pack(pady=5)
+    teams = fetch_teams()  # Fetch team list from database
+    team_dict = {team[1]: team[0] for team in teams}  # Map team name to team ID
+    team_var = tk.StringVar()
+    team_dropdown = ttk.Combobox(edit_window, textvariable=team_var, values=list(team_dict.keys()), state="readonly")
+    team_dropdown.pack(pady=5)
+    team_dropdown.set(team_name)  # Set current team
+
+    def submit_edit():
+        new_name = entry_name.get().strip()
+        new_role = role_var.get().strip()
+        new_team_name = team_var.get().strip()
+        new_team_id = team_dict.get(new_team_name, None)
+
+        if not new_name:
+            messagebox.showwarning("Input Error", "Player name is required.")
+            return
+        if not new_team_id:
+            messagebox.showwarning("Input Error", "Please select a team.")
+            return
+
+        if update_player(player_id, new_name, new_role, new_team_id):
+            search()
+            tree.item(selected_item, values=(player_id, new_name, new_role, new_team_name))
+            messagebox.showinfo("Success", "Player updated successfully!")
+            edit_window.destroy()
+        else:
+            messagebox.showerror("Error", "Failed to update player.")
+
+        # Update the UI
+        
+
+        
+        
+
+    tk.Button(edit_window, text="Save Changes", command=submit_edit).pack(pady=10)
+    edit_window.mainloop()
+
     
-def delete():
-    pass
+def delete(tree):
+    selected_item = tree.selection()
+    if not selected_item:
+        messagebox.showwarning("Selection Error", "Please select a player to delete.")
+        return
+    
+    player_id = tree.item(selected_item, "values")[0]  # Assuming player_id is the first column
+
+    confirm = messagebox.askyesno("Confirm Delete", f"Are you sure you want to delete Player ID {player_id}?")
+    if confirm:
+        if delete_player(player_id):  # Call database function
+            search()
+            messagebox.showinfo("Success", "Player deleted successfully.")
+            tree.delete(selected_item)  # Remove from UI
+        else:
+            messagebox.showerror("Error", "Failed to delete player.")
+
+
+
+
 def profile():
-    pass
+    global tree
+    selected_item = tree.selection()
+    if not selected_item:
+        messagebox.showwarning("Selection Error", "Please select a player to view the profile.")
+        return
+    
+    player_id = tree.item(selected_item, "values")[0]  # Get selected player's player_id
+
+    if not player_id:
+        messagebox.showerror("Error", "Could not retrieve player ID.")
+        return
+
+    # Fetch user_id from the database using player_id
+    user_id = get_user_id(player_id)
+
+    if not user_id:
+        messagebox.showerror("Error", "Could not retrieve User ID for the selected player.")
+        return
+
+    # Open playerdash.py with user_id as an argument
+    os.system(f'python playerdash/playerdashnologout.py {user_id}')
 
 
 window = Tk()
@@ -198,7 +273,7 @@ button_2 = Button(
     image=button_image_2,
     borderwidth=0,
     highlightthickness=0,
-    command=delete,
+    command=lambda:delete(tree),
     relief="flat"
 )
 button_2.place(

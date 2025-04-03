@@ -1,6 +1,7 @@
 from pathlib import Path
 from tkinter import Tk, Canvas, Button, PhotoImage, Listbox, Scrollbar, messagebox,simpledialog
-from dbconnectionadmin import get_teams, add_team, remove_team, get_players, update_player_team,get_team_players
+from dbconnectionadmin import get_teams, add_team, remove_team, update_player_team,get_team_players
+import tkinter as tk
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Soham\Desktop\RAMDOM PROJECTS\cricket_league_management\ui\build\admindash\assets1\assetsteam\frame0")
@@ -16,6 +17,9 @@ def update_listbox(data):
 
 # Function to load all teams into the listbox
 def load_teams():
+    button_4.config(state=tk.NORMAL)
+    button_3.config(state=tk.NORMAL)
+    button_2.config(state=tk.NORMAL)
     teams = get_teams()  # Fetch teams from DB
     update_listbox(teams)
     listbox.selection_clear(0, "end")
@@ -47,6 +51,9 @@ def remove_selected_team():
 
 # Function to view players in a selected team
 def view_team_players():
+    button_4.config(state=tk.DISABLED)
+    button_3.config(state=tk.DISABLED)
+    button_2.config(state=tk.DISABLED)
     selected_team = listbox.get("active")
 
     

@@ -118,9 +118,6 @@ canvas.create_image(1025.0, 532.0, image=image_image_4)
 canvas.create_text(742.0, 48.0, anchor="nw", text="UPCOMING MATCHES", fill="#000000", font=("Iceland", 41 * -1))
 canvas.create_text(742.0, 376.0, anchor="nw", text="TEAM STANDINGS", fill="#000000", font=("Iceland", 41 * -1))
 
-button_image_1 = PhotoImage(file=relative_to_assets("button_1.png"))
-button_1 = Button(image=button_image_1, borderwidth=0, highlightthickness=0, command=logout, relief="flat")
-button_1.place(x=539.0, y=42.0, width=72.0, height=35.0)
 
 def display_standings():
     standings = get_standings()

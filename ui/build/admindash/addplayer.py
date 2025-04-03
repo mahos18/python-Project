@@ -1,20 +1,15 @@
 
 from pathlib import Path
-from redirect import open_main,open_signin
 from tkinter import ttk 
-from dbconnection import add_user,send_verification_email,verify_email_code,usernamealreadyexist,emailalreadyexist,fetch_teams,is_team_full,add_player
+from dbconnectionadmin import add_user,send_verification_email,verify_email_code,emailalreadyexist,usernamealreadyexist,fetch_teams,add_player,is_team_full
 import re
 import tkinter as tk
-
-
-# from Tkinter import *
-# Explicit imports to satisfy Flake8
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage,font,StringVar, OptionMenu,messagebox,Toplevel, Label
 
 
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Soham\Desktop\RAMDOM PROJECTS\cricket_league_management\ui\build\assets\assets_signup\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Soham\Desktop\RAMDOM PROJECTS\cricket_league_management\ui\build\admindash\assets1\assets_signup\frame0")
 
 
 def relative_to_assets(path: str) -> Path:
@@ -23,20 +18,16 @@ def relative_to_assets(path: str) -> Path:
 
 window = Tk()
 
-window.geometry("516x497")
+window.geometry("516x350")
 window.configure(bg = "#FFFFFF")
 custom_font = font.Font(family="Iceland", size=20)
 custom_font20 = font.Font(family="Iceland", size=25)
 role_var = StringVar()
 role_var.set("Select Role")
-def main():
-    window.destroy()
+window.lift()          # Bring the window to the front
+window.focus_force()
+window.grab_set() 
     
-    
-
-def signin():
-    window.destroy()
-    open_signin()
 
 
 def add(username):
@@ -84,13 +75,12 @@ def add(username):
         # **Only close the window if the player is successfully added**
         if add_player(player_name, role, team_id, username):  
             messagebox.showinfo("Success", "Player added successfully!")
-            add_window.destroy() 
+            add_window.destroy()  # ✅ Now we can close it
         else:
             messagebox.showerror("Error", "Failed to add player.")  
             return  
 
     tk.Button(add_window, text="Add Player", command=submit).pack(pady=10)
-    add_window.mainloop()
    
 
 
@@ -98,7 +88,7 @@ def register():
     username = entry_2.get()
     password = entry_1.get()
     email = entry_3.get()
-    role = role_var.get()
+    role = "player"
     if username == "" or password == "" or email=="":
         messagebox.showerror("Error", "All fields are required")
         return
@@ -161,9 +151,8 @@ def open_otp_window():
     def verify_otp():
         otp = entry_otp.get()
         if verify_email_code(email, otp):
-            otp_window.destroy()
             register()  # Register user after verification
-            
+            otp_window.destroy()
         else:
             messagebox.showerror("Verification Failed", "Invalid OTP. Please try again.")
 
@@ -279,22 +268,6 @@ canvas.create_text(
     font=custom_font20
 )
 
-canvas.create_text(
-    27.0,
-    271.0,
-    anchor="nw",
-    text="ROLE",
-    fill="#000000",
-    font=custom_font20
-)
-
-role_var = StringVar()
-role_var.set("Player")
-role_dropdown = OptionMenu(window, role_var, "Player", "User")
-role_dropdown["menu"].config(font=custom_font)  
-role_dropdown.config(font=custom_font)  
-role_dropdown.place(x=190.5, y=270.0, width=245.0, height=40.0)
-
 
 button_image_1 = PhotoImage(
     file=relative_to_assets("button_1.png"))
@@ -306,67 +279,11 @@ button_1 = Button(
     relief="flat"
 )
 button_1.place(
-    x=84.0,
-    y=342.0,
+    x=90.0,
+    y=271.0,
     width=347.0,
     height=65.0
 )
 
-canvas.create_text(
-    71.0,
-    435.0,
-    anchor="nw",
-    text="ALREADY REGISTERED?",
-    fill="#FD0707",
-    font=custom_font
-)
-
-button_image_2 = PhotoImage(
-    file=relative_to_assets("button_2.png"))
-button_2 = Button(
-    image=button_image_2,
-    borderwidth=0,
-    highlightthickness=0,
-    command=signin,
-    relief="flat"
-)
-button_2.place(
-    x=286.0,
-    y=431.0,
-    width=105.0,
-    height=30.0
-)
-
-button_image_3 = PhotoImage(
-    file=relative_to_assets("button_3.png"))
-button_3 = Button(
-    image=button_image_3,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("button_3 clicked"),
-    relief="flat"
-)
-button_3.place(
-    x=405.0,
-    y=429.0,
-    width=39.0,
-    height=32.0
-)
-
-button_image_4 = PhotoImage(
-    file=relative_to_assets("button_4.png"))
-button_4 = Button(
-    image=button_image_4,
-    borderwidth=0,
-    highlightthickness=0,
-    command=main,
-    relief="flat"
-)
-button_4.place(
-    x=408.0,
-    y=430.0,
-    width=32.0,
-    height=28.0
-)
 window.resizable(False, False)
 window.mainloop()

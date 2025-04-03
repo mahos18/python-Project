@@ -155,6 +155,82 @@ def send_verification_email(receiver_email):
     except Exception as e:
         return "error"
 
+def emailalreadyexist(email):
+    try:
+        conn= connect_db()
+        cursor = conn.cursor()
 
+        query = "SELECT * FROM users WHERE email = %s"
+        cursor.execute(query, (email,))
+        existing_user = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        if existing_user:
+            return True
+        else:
+            return False
+        
+    except mysql.connector.Error as err:
+        print(f"Database error: {err}")
+        return None
+
+def usernamealreadyexist(username):
+    try:
+        conn= connect_db()
+        cursor = conn.cursor()
+
+        query = "SELECT * FROM users WHERE email = %s"
+        cursor.execute(query, (username,))
+        existing_user = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        if existing_user:
+            return True
+        else:
+            return False
+        
+    except mysql.connector.Error as err:
+        print(f"Database error: {err}")
+        return None
+def fetch_teams():
+    try:
+        conn = connect_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT team_id, team_name FROM teams")
+        teams = cursor.fetchall()
+        conn.close()
+        return teams
+    except Exception as e:
+        print("Error fetching teams:", e)
+        return []
+def is_team_full(team_id):
+    conn = connect_db()  # Ensure connect_db() is implemented
+    cursor = conn.cursor()
+    try:
+        query = "SELECT COUNT(*) FROM players WHERE team_id = %s"
+        cursor.execute(query, (team_id,))
+        count = cursor.fetchone()[0]
+
+        cursor.close()
+        conn.close()
+
+        return count >= 11 
+    except Error as e:
+        print(f"Error fetching players: {e}")
+        return False
+
+def add_player(player_name,role,team_id,username):
+    conn = connect_db()
+    cursor = conn.cursor()
+    try:
+        query = "UPDATE players  SET player_name = %s, role = %s, team_id = %s WHERE  user_id=(SELECT user_id FROM users WHERE username =%s)"
+        cursor.execute(query, (player_name, role,team_id,username))
+        conn.commit()
+        conn.close()
+        return True
+    except Error as e:
+        print(f"Error fetching players: {e}")
+        return False
+    
 def verify_email_code(email, code):
     return verification_codes.get(email) == code

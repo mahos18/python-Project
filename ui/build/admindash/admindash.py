@@ -8,6 +8,7 @@ import os
 # from tkinter import *
 # Explicit imports to satisfy Flake8
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+import tkinter as tk
 #from teammng import open_team_management
 
 
@@ -22,17 +23,23 @@ def open_team_management():
      os.system("python admindash/team.py")
 
 def openstats():
+     button_1.config(state=tk.DISABLED)
      os.system("python admindash/stats.py")
+     button_1.config(state=tk.NORMAL)
 
 def openpm():
      os.system("python admindash/playerm.py")
-
+def opnematch():
+     os.system("python admindash/matchm.py")
 
 
 window = Tk()
 window.title("Admin")
 window.geometry("1368x720")
 window.configure(bg = "#FFFFFF")
+
+
+
 
 
 canvas = Canvas(
@@ -68,7 +75,7 @@ button_1 = Button(
     image=button_image_1,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_1 clicked"),
+    command=opnematch,
     relief="flat"
 )
 button_1.place(
