@@ -82,13 +82,11 @@ def get_upcoming_matches(team_id):
     cursor = conn.cursor()
 
     query = """
-        SELECT m.match_date, t1.team_name AS team1_name, t2.team_name AS team2_name,m.status
+        SELECT  t1.team_name AS team1_name, t2.team_name AS team2_name,m.status
         FROM matches m
         JOIN teams t1 ON m.team1_id = t1.team_id
         JOIN teams t2 ON m.team2_id = t2.team_id
-        WHERE (m.team1_id = %s OR m.team2_id = %s) 
-        AND m.match_date >= CURDATE()
-        ORDER BY m.match_date ASC
+        WHERE (m.team1_id = %s OR m.team2_id = %s)
     """
     cursor.execute(query, (team_id,team_id))
     matches = cursor.fetchall()

@@ -2,9 +2,11 @@
 from pathlib import Path
 from redirect import open_main,open_signin
 from tkinter import ttk 
+#functions names
 from dbconnection import add_user,send_verification_email,verify_email_code,usernamealreadyexist,emailalreadyexist,fetch_teams,is_team_full,add_player
 import re
 import tkinter as tk
+from admindash.dbconnectionadmin import remove_user
 
 
 # from Tkinter import *
@@ -33,7 +35,6 @@ def main():
     window.destroy()
     
     
-
 def signin():
     window.destroy()
     open_signin()
@@ -87,6 +88,7 @@ def add(username):
             add_window.destroy() 
         else:
             messagebox.showerror("Error", "Failed to add player.")  
+            remove_user(username)
             return  
 
     tk.Button(add_window, text="Add Player", command=submit).pack(pady=10)
@@ -110,8 +112,7 @@ def register():
         messagebox.showinfo("Success", "user Added add player details")
         add(username)
         window.destroy()
-        
-    
+            
     else:
         messagebox.showerror("Error", "Invalid Username or Password")
 

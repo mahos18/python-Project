@@ -35,9 +35,9 @@ def update_table(*args):
     elif selection == "Most Wickets":
         columns = ("Player Name", "Team Name", "Wickets")
         data = get_most_wickets()
-    elif selection == "Highest Strike Rate":
-        columns = ("Player Name", "Team Name", "Strike Rate")
-        data = get_highest_strike_rate()
+    # elif selection == "Highest Strike Rate":
+    #     columns = ("Player Name", "Team Name", "Strike Rate")
+    #     data = get_highest_strike_rate()
     elif selection == "Points Table":
         columns = ("Team Name", "Matches Played", "Wins", "Lose", "Points")
         data = get_points_table()
@@ -66,11 +66,6 @@ window = Tk()
 window.geometry("1368x720")
 window.configure(bg = "#FFFFFF")
 window.title("player stats")
-
-
-
-
-
 canvas = Canvas(
     window,
     bg = "#FFFFFF",
@@ -81,13 +76,11 @@ canvas = Canvas(
     relief = "ridge"
 )
 
-
-
 frame = tk.Frame(window, bg="#FAF2F2")
 frame.place(x=170, y=220, width=800, height=420)  # Adjust as needed
 
 # Combobox inside the frame
-options = ["Most Runs", "Most Wickets", "Highest Strike Rate", "Points Table"]
+options = ["Most Runs", "Most Wickets", "Points Table"]
 
 # Create StringVar to store selection
 selected_option = StringVar()

@@ -3,12 +3,10 @@ from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, messagebox
 import sys
 from tkinter import ttk
 import tkinter as tk
-
-OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Soham\Desktop\RAMDOM PROJECTS\cricket_league_management\ui\build\scorecard\assets\frame0")
-
-def relative_to_assets(path: str) -> Path:
-    return ASSETS_PATH / Path(path)
+from dbconn import get_team_players,get_team_ids,get_team1_name,get_team2_name,complete_match_update
+import os
+import subprocess
+from scoreboard import open_scoreboard
 
 
 
@@ -16,154 +14,198 @@ def load_match_id():
     """Fetches the user_id from command-line arguments if provided."""
     return sys.argv[1] if len(sys.argv) > 1 else None# Replace with actual logged-in user ID
 
-match_id = load_match_id() 
-print(match_id)
-def select_batting_team(match_id):
-    
+#db
+match_id = load_match_id()
+
+
+
+
+
+# Initialize Window
+# def scorecard(match_id, batting_team, bowling_team, batsman1, batsman2, bowler):
+data1=[]
+data2=[]
+
+
+# match_id=110
+def open_setup_window(match_id,ining):
+    global data
+    data=[]
+    batsmen_list=dict()
+    # remaining_batsmen_list=dict()
+    bowlers_list=dict()
+    print("match id:",match_id)
     # Create popup window
-    popup = tk.Toplevel()
+    popup = Tk()
     popup.title("Select Batting Team and Players")
     popup.geometry("400x300")
-    
+    if ining==1:
+        heading = tk.Label(popup, text="INNING ONE", font=("Helvetica", 16, "bold"))
+        heading.pack(pady=10)
+    else:
+        heading = tk.Label(popup, text="INNING TWO", font=("Helvetica", 16, "bold"))
+        heading.pack(pady=10)
+
     # Batting team selection
     tk.Label(popup, text="Select Batting Team:").pack()
     team_var = tk.StringVar()
-    team_dropdown = ttk.Combobox(popup, textvariable=team_var, values=["Team 1", "Team 2"])
+    team1_name,team2_name=get_team1_name(match_id),get_team2_name(match_id)
+    team_dropdown = ttk.Combobox(popup, textvariable=team_var, values=[team1_name,team2_name])
     team_dropdown.pack()
-    
+
     # Batsman selection
     tk.Label(popup, text="Select Batsman 1:").pack()
     batsman1_var = tk.StringVar()
     batsman1_dropdown = ttk.Combobox(popup, textvariable=batsman1_var)
     batsman1_dropdown.pack()
-    
+
     tk.Label(popup, text="Select Batsman 2:").pack()
     batsman2_var = tk.StringVar()
     batsman2_dropdown = ttk.Combobox(popup, textvariable=batsman2_var)
     batsman2_dropdown.pack()
-    
+
     # Bowler selection
     tk.Label(popup, text="Select Bowler:").pack()
     bowler_var = tk.StringVar()
     bowler_dropdown = ttk.Combobox(popup, textvariable=bowler_var)
     bowler_dropdown.pack()
-    
+
+    tk.Label(popup, text="Select Number of Overs:").pack()
+    overs_var = tk.StringVar()
+    overs_dropdown = ttk.Combobox(popup, textvariable=overs_var, values=["1","2", "3", "4"], state="readonly")
+    overs_dropdown.pack()
+    overs_dropdown.current(0)
+
+
+    players=get_team_ids(match_id)
+    team_id1=players[0]
+    team_id2=players[1]
+    print ("debug")
+    print(team_id1)
+    print(team_id2)
+    team1_players=get_team_players(team_id1)
+    print(team1_players)
+    team2_players=get_team_players(team_id2)
+    print(team2_players)
+
+    # def update_remaining_player_dict():
+    #     global remaining_batsmen_list
+    #     b1=batsman1_var.get()
+    #     b2=batsman1_var.get()
+    #     print(b1,b2)
+    #     keys_to_remove = [key for key, value in remaining_batsmen_list.items() if value in [b1, b2]]
+
+    #     for key in keys_to_remove:
+    #         del remaining_batsmen_list[key]
+    #     print("remianing batsmen")
+    #     print(remaining_batsmen_list)
+
+
+
     def update_player_lists(*args):
+
+        global batsmen_list, remaining_batsmen_list, bowlers_list 
+        batsman1_dropdown.set("")
+        batsman2_dropdown.set("")
+        bowler_dropdown.set("")
+        
+        batsman1_dropdown["values"] = []
+        batsman2_dropdown["values"] = []
+        bowler_dropdown["values"] = []
+
+
         selected_team = team_var.get()
-        if selected_team == "Team 1":
+        if selected_team == team1_name:
             batsmen_list = team1_players
+            remaining_batsmen_list=batsmen_list
             bowlers_list = team2_players
         else:
             batsmen_list = team2_players
+            remaining_batsmen_list=batsmen_list
             bowlers_list = team1_players
         
-        batsman1_dropdown["values"] = [f"{p[1]} ({p[0]})" for p in batsmen_list]
-        batsman2_dropdown["values"] = [f"{p[1]} ({p[0]})" for p in batsmen_list]
-        bowler_dropdown["values"] = [f"{p[1]} ({p[0]})" for p in bowlers_list]
-    
+        batsman1_dropdown["values"] = list(batsmen_list.values())
+        # remaining_batsmen_list = {pid: name for pid, name in batsmen_list.items() if name != selected_batsman1}
+        # print("list_debug")
+        # print (remaining_batsmen_list)
+        batsman2_dropdown["values"] = list(batsmen_list.values())
+        bowler_dropdown["values"] = list(bowlers_list.values())
+
+    # def update_batsman2_dropdown():
+    #     selected_batsman1 = batsman1_var.get()
+        
+    #     remaining_batsmen_list = {pid: name for pid, name in batsmen_list.items() if name != selected_batsman1}
+        
+    #     batsman2_dropdown.set("")
+    #     batsman2_dropdown["values"] = list(remaining_batsmen_list.values())
+    # batsman1_var.trace_add("write", update_batsman2_dropdown)
     team_dropdown.bind("<<ComboboxSelected>>", update_player_lists)
-    
+
     def confirm_selection():
-        if not (team_var.get() and batsman1_var.get() and batsman2_var.get() and bowler_var.get()):
+        global data
+        if not (team_var.get() and batsman1_var.get() and batsman2_var.get() and bowler_var.get() and overs_var.get()):
             messagebox.showerror("Error", "All selections must be made!")
             return
-        
-        messagebox.showinfo("Success", f"Match Setup:\nBatting Team: {team_var.get()}\nBatsmen: {batsman1_var.get()}, {batsman2_var.get()}\nBowler: {bowler_var.get()}")
+
+        batting_team_name = team_var.get()
+        bowling_team_name = team1_name if batting_team_name == team2_name else team2_name
+        batsman1 = batsman1_var.get()
+        batsman2 = batsman2_var.get()
+        bowler = bowler_var.get()
+        selected_overs = int(overs_var.get())
+
+        messagebox.showinfo("Success", f"Match Setup:\nBatting Team: {batting_team_name}\nBatsmen: {batsman1}, {batsman2}\nBowler: {bowler}\nOvers: {selected_overs}")
         popup.destroy()
-    
+        print(batsmen_list, bowlers_list)
+        # Pass overs too if open_scoreboard accepts it
+        data=open_scoreboard(match_id, batting_team_name, bowling_team_name, batsman1, batsman2, bowler, batsmen_list, bowlers_list, selected_overs,ining)
+
     confirm_btn = tk.Button(popup, text="Confirm", command=confirm_selection)
     confirm_btn.pack()
-    
+
     popup.mainloop()
+    return data
 
 
-# Initialize Window
-def scorecard():
-    window = Tk()
-    window.geometry("1368x720")
-    window.configure(bg="#FFFFFF")
+data1=open_setup_window(match_id,1)
+print(data1)
+data2=open_setup_window(match_id,2)
+if data1 and data2:
+    def show_match_summary(data1, data2):
+        popup = tk.Toplevel()
+        popup.title("Match Summary")
 
-    # Create Canvas
-    canvas = Canvas(
-        window,
-        bg="#FFFFFF",
-        height=720,
-        width=1368,
-        bd=0,
-        highlightthickness=0,
-        relief="ridge"
-    )
-    canvas.place(x=0, y=0)
+        # Set Iceland 40 bold (you must have the Iceland font installed on your system)
+        font_style = ("Iceland", 40, "bold")
 
-    # Load Images
-    image_image_1 = PhotoImage(file=relative_to_assets("image_1.png"))
-    canvas.create_image(1114.0, 247.0, image=image_image_1)
+        # Display data side by side
+        for i in range(len(data1)):
+            label1 = tk.Label(popup, text=str(data1[i]), font=font_style)
+            label1.grid(row=i, column=0, padx=10, pady=5)
 
-    image_image_2 = PhotoImage(file=relative_to_assets("image_2.png"))
-    canvas.create_image(681.0, 59.0, image=image_image_2)
+            label2 = tk.Label(popup, text=str(data2[i]), font=font_style)
+            label2.grid(row=i, column=1, padx=10, pady=5)
 
-    image_image_3 = PhotoImage(file=relative_to_assets("image_3.png"))
-    canvas.create_image(427.0, 247.0, image=image_image_3)
+        # Dropdown for winning team
+        winning_label = tk.Label(popup, text="Winning Team:", font=font_style)
+        winning_label.grid(row=len(data1), column=0, padx=10, pady=20)
 
-    image_image_4 = PhotoImage(file=relative_to_assets("image_4.png"))
-    canvas.create_image(428.0, 447.0, image=image_image_4)
+        selected_team = tk.StringVar()
+        dropdown = ttk.Combobox(popup, textvariable=selected_team, values=[data[0], data2[0]], font=font_style, state="readonly", width=15)
+        dropdown.grid(row=len(data1), column=1, padx=10, pady=20)
 
-    image_image_5 = PhotoImage(file=relative_to_assets("image_5.png"))
-    canvas.create_image(430.0, 609.0, image=image_image_5)
+        # Complete Match Button
+        complete_btn = tk.Button(popup, text="Complete Match", font=font_style, command=complete_match_update(match_id, data1, data2, selected_team))
+        complete_btn.grid(row=len(data1)+1, column=0, columnspan=2, pady=30)
 
-    image_image_6 = PhotoImage(file=relative_to_assets("image_6.png"))
-    canvas.create_image(1115.0, 543.0, image=image_image_6)
+    # Example usage
+    root = tk.Tk()
+    root.withdraw()  # Hide the main window
 
-    # Add Text Elements
-    canvas.create_text(184.0, 29.0, anchor="nw", text="Team name 1", fill="#000000", font=("Iceland", 53))
-    canvas.create_text(900.0, 24.0, anchor="nw", text="Team name 2", fill="#000000", font=("Iceland", 53))
-    canvas.create_text(644.0, 38.0, anchor="nw", text="V/S", fill="#000000", font=("Iceland", 53))
+    # data = ["Team A", "150/5"]
+    # data2 = ["Team B", "148/8"]
 
-    # Button Actions
-    def button_clicked(button_num):
-        print(f"Button {button_num} clicked")
-
-    # Create Buttons
-    buttons = []
-    button_positions = [
-        (195, 399), (73, 399), (702, 557), (204, 557), (54, 557),
-        (343, 557), (509, 557), (317, 398), (439, 399), (561, 399), (683, 398)
-    ]
-
-    for i, pos in enumerate(button_positions, start=1):
-        button_img = PhotoImage(file=relative_to_assets(f"button_{i}.png"))
-        button = Button(
-            image=button_img,
-            borderwidth=0,
-            highlightthickness=0,
-            command=lambda i=i: button_clicked(i),
-            relief="flat"
-        )
-        button.image = button_img  # Keep reference
-        button.place(x=pos[0], y=pos[1], width=97, height=97)
-        buttons.append(button)
-    # Additional UI Elements
-    image_image_7 = PhotoImage(file=relative_to_assets("image_7.png"))
-    canvas.create_image(427.0, 181.0, image=image_image_7)
-
-    image_image_8 = PhotoImage(file=relative_to_assets("image_8.png"))
-    canvas.create_image(427.0, 299.0, image=image_image_8)
-
-    P1=canvas.create_text(47.0, 151.0, anchor="nw", text="player 1", fill="#000000", font=("Iceland", 51))
-    P2=canvas.create_text(47.0, 269.0, anchor="nw", text="player 2", fill="#000000", font=("Iceland", 51))
-    P1_runs=canvas.create_text(570.0, 151.0, anchor="nw", text="00", fill="#000000", font=("Iceland", 51))
-    P2_runs=canvas.create_text(570.0, 269.0, anchor="nw", text="11", fill="#000000", font=("Iceland", 51))
-    P1_bowls=canvas.create_text(686.0, 161.0, anchor="nw", text="00", fill="#000000", font=("Iceland", 35))
-    P2_bowls=canvas.create_text(686.0, 279.0, anchor="nw", text="11", fill="#000000", font=("Iceland", 35))
-    s1=canvas.create_text(754.0, 151.0, anchor="nw", text="*", fill="#000000", font=("Iceland", 56))
-    s2=canvas.create_text(753.0, 278.0, anchor="nw", text="\n", fill="#000000", font=("Iceland", 56))
-    batting_team=canvas.create_text(893.0, 135.0, anchor="nw", text="TEAM NAME", fill="#FFFFFF", font=("Iceland", 50))
-    runs=canvas.create_text(942.0, 212.0, anchor="nw", text="000", fill="#FFFFFF", font=("Iceland", 60))
-    slash=canvas.create_text(1109.0, 210.0, anchor="nw", text="/", fill="#FFFFFF", font=("Iceland", 60))
-    wickets=canvas.create_text(1154.0, 212.0, anchor="nw", text="00", fill="#FFFFFF", font=("Iceland", 60))
-    bowler_name=canvas.create_text(893.0, 408.0, anchor="nw", text="bowler name", fill="#F81115", font=("Iceland", 50))
-    over_bowls=canvas.create_text(893.0, 488.0, anchor="nw", text="1,2,3,4,6", fill="#6E2323", font=("Iceland", 60))
-
-    window.resizable(False, False)
-    window.mainloop()
-scorecard()
+    show_match_summary(data1, data2)
+    root.mainloop()
+print(data1)
+print(data2)

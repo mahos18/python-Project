@@ -1,7 +1,7 @@
 
 from pathlib import Path
 from tkinter import ttk 
-from dbconnectionadmin import add_user,send_verification_email,verify_email_code,emailalreadyexist,usernamealreadyexist,fetch_teams,add_player,is_team_full
+from dbconnectionadmin import add_user,send_verification_email,verify_email_code,emailalreadyexist,usernamealreadyexist,fetch_teams,add_player,is_team_full,remove_user
 import re
 import tkinter as tk
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage,font,StringVar, OptionMenu,messagebox,Toplevel, Label
@@ -78,9 +78,11 @@ def add(username):
             add_window.destroy()  # ✅ Now we can close it
         else:
             messagebox.showerror("Error", "Failed to add player.")  
+            remove_user(username)
             return  
 
     tk.Button(add_window, text="Add Player", command=submit).pack(pady=10)
+    add_window.mainloop()
    
 
 
@@ -152,7 +154,10 @@ def open_otp_window():
         otp = entry_otp.get()
         if verify_email_code(email, otp):
             register()  # Register user after verification
-            otp_window.destroy()
+            try:
+                 otp_window.destroy()
+            except tk.TclError:
+                pass
         else:
             messagebox.showerror("Verification Failed", "Invalid OTP. Please try again.")
 

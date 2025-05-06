@@ -5,7 +5,7 @@
 
 from pathlib import Path
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage,font,messagebox
-from dbconnectionadmin import get_all_players,add_player,fetch_teams,delete_player,update_player,get_user_id
+from dbconnectionadmin import get_all_players,add_player,fetch_teams,delete_player,update_player,get_user_id,is_team_full
 from tkinter import ttk
 import tkinter as tk
 import os
@@ -117,6 +117,9 @@ def edit():
         if not new_team_id:
             messagebox.showwarning("Input Error", "Please select a team.")
             return
+        if is_team_full(new_team_id):  
+            messagebox.showwarning("Team Error", "Team already has 11 players.")
+            return 
 
         if update_player(player_id, new_name, new_role, new_team_id):
             search()

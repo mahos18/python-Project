@@ -24,7 +24,7 @@ window.geometry("1440x720")
 window.configure(bg = "#FFFFFF")
 
 def open_scorecard(match_id):
-    subprocess.run(["python", "scorecard/scorecard.py", str(match_id)])
+    subprocess.Popen(["python", "scorecard/scorecard.py", str(match_id)])
 
 def display_standings():
     standings = get_standings()
@@ -129,35 +129,46 @@ def open_schedule_match_window():
     schedule_window.mainloop()
 
 def check_teams_and_proceed():
-    """Check if both teams have exactly 11 players before proceeding"""
-    selected_item = tree.focus()  # Get selected match
+    selected_item = tree.focus()  # Get the selected match from the treeview
     if not selected_item:
         messagebox.showerror("Error", "Please select a match to start.")
         return
 
     match_details = tree.item(selected_item, "values")  # Get match details
-    match_id = match_details[0]  # Assuming Match ID is in the first column
 
-    # Fetch Team IDs
-    team1_id, team2_id = get_team_ids(match_id)
+    # Show confirmation popup
+    confirm = messagebox.askyesno("Confirm", f"Do you want to start the match: {match_details[0]}?")
     
-    if not team1_id or not team2_id:
-        messagebox.showerror("Error", "Invalid match data. Teams not found.")
-        return
+    if confirm:
+        """Check if both teams have exactly 11 players before proceeding"""
+        selected_item = tree.focus()  # Get selected match
+        if not selected_item:
+            messagebox.showerror("Error", "Please select a match to start.")
+            return
 
-    # Get player counts
-    team1_count = get_player_count(team1_id)
-    team2_count = get_player_count(team2_id)
+        match_details = tree.item(selected_item, "values")  # Get match details
+        match_id = match_details[0]  # Assuming Match ID is in the first column
 
-    # Check if both teams have 11 players
-    if team1_count != 11 or team2_count != 11:
-        messagebox.showerror("Error", f"Team 1 has {team1_count} players, Team 2 has {team2_count} players. Both must have 11 players.")
-        return
+        # Fetch Team IDs
+        team1_id, team2_id = get_team_ids(match_id)
+        print(team1_id,team2_id)
+        if not team1_id or not team2_id:
+            messagebox.showerror("Error", "Invalid match data. Teams not found.")
+            return
 
-    messagebox.showinfo("Success", "Both teams have 11 players. Proceeding to the next step!")
-    open_scorecard(match_id)
+        # Get player counts
+        team1_count = get_player_count(team1_id)
+        team2_count = get_player_count(team2_id)
 
+        # Check if both teams have 11 players
+        if team1_count != 11 or team2_count != 11:
+            messagebox.showerror("Error", f"Team 1 has {team1_count} players, Team 2 has {team2_count} players. Both must have 11 players.")
+            return
 
+        messagebox.showinfo("Success", "Both teams have 11 players. Proceeding to the next step!")
+        open_scorecard(match_id)
+
+ 
 
 
 def start_match():

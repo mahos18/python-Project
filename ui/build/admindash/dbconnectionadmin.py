@@ -21,6 +21,7 @@ def connect_db():
         return None
 
 
+
 def get_teams():
     """Fetch all team names."""
     connection = connect_db()
@@ -128,7 +129,7 @@ def get_most_wickets():
     query = """SELECT p.player_name, t.team_name, p.wickets 
                 FROM players p
                 JOIN teams t ON p.team_id = t.team_id
-                ORDER BY p.runs DESC 
+                ORDER BY p.wickets DESC 
                 ;"""
     cursor.execute(query)
     data = cursor.fetchall()
@@ -183,7 +184,7 @@ def get_all_players(search=""):
     query = """
         SELECT p.player_id, p.player_name, p.role, t.team_name 
         FROM players p 
-        JOIN teams t ON p.team_id = t.team_id
+        LEFT JOIN teams t ON p.team_id = t.team_id
         WHERE p.player_name LIKE %s OR t.team_name LIKE %s OR p.player_id LIKE %s
     """
     
@@ -393,6 +394,23 @@ def get_user_id(player_id):
         cursor.close()
         conn.close()
 
+def remove_user(username):
+    """Remove a team and unassign its players."""
+    connection = connect_db()
+    if not connection:
+        return
+    
+    try:
+        cursor = connection.cursor()
+        cursor.execute("DELETE FROM players WHERE userid = (SELECT user_id FROM users WHERE username=%s)", (username,))
+        cursor.execute("DELETE FROM users WHERE username = %s", (username,))
+        connection.commit()
+    except Error as e:
+        print(f"Error removing team: {e}")
+    finally:
+        cursor.close()
+        connection.close()
+
 #match management
 
 def get_standings():
@@ -524,10 +542,11 @@ def get_team_ids(match_id):
     query = "SELECT team1_id, team2_id FROM matches WHERE match_id = %s"
     cursor.execute(query, (match_id,))
     result = cursor.fetchone()
-    
+    t1_id=result[0]
+    t2_id=result[1]
     cursor.close()
     conn.close()
-    return result if result else (None, None)
+    return t1_id,t2_id if result else (None, None)
 
 def get_player_count(team_id):
     """Fetch the number of players for a given team ID"""

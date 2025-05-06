@@ -169,7 +169,7 @@ def display_matches(team_id):
     style.configure("Treeview", rowheight=38) # Change font for headings
 
     # Create Treeview widget
-    columns = ("Team 1", "Team 2", "Date", "Status")
+    columns = ("Team 1", "Team 2", "Status")
     column_ratios = [0.30,0.30,0.20,0.20]  # Adjust ratios (sum should be 1.0)
     total_width = 500  # Set total width of the table
 
@@ -184,10 +184,9 @@ def display_matches(team_id):
     # Insert data into the table
     for team in matches:
         tree.insert("", "end", values=(
-            team[1],
-            team[2],
             team[0],
-            team[3]
+            team[1],
+            team[2]
         ))
 
 

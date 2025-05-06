@@ -183,8 +183,8 @@ def display_matches(team_id):
         tree.insert("", "end", values=(
             team[1],
             team[2],
-            team[0],
-            team[3]
+            team[0]
+            
         ))
 
 

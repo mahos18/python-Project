@@ -27,7 +27,7 @@ def load_teams():
 # Function to add a new team
 def add_new_team():
     teams = get_teams()
-    if len(teams) >= 6:
+    if len(teams) >= 7:
         messagebox.showerror("Limit Reached", "Maximum 6 teams allowed!")
         return
     team_name = simpledialog.askstring("New Team", "Enter new team name:")
@@ -63,7 +63,7 @@ def view_team_players():
         return
 
     try:
-        print(f"Debug: Selected Team -> {selected_team}")  # Debugging
+        
         players = get_team_players(selected_team)  # Fetch players from DB
 
         if not players:

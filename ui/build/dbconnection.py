@@ -127,7 +127,7 @@ def get_user_id(username, password):
 verification_codes = {}
 def send_verification_email(receiver_email):
    
-    verification_code = str(random.randint(100000, 999999))  # Generate 6-digit OTP
+    verification_code = str(random.randint(1000, 9999))  # Generate 4-digit OTP
     verification_codes[receiver_email] = verification_code  # Store OTP for checking later
 
     sender_email = "sohamlohote@gmail.com"  # Your email
@@ -179,7 +179,7 @@ def usernamealreadyexist(username):
         conn= connect_db()
         cursor = conn.cursor()
 
-        query = "SELECT * FROM users WHERE email = %s"
+        query = "SELECT * FROM users WHERE username = %s"
         cursor.execute(query, (username,))
         existing_user = cursor.fetchone()
         cursor.close()
